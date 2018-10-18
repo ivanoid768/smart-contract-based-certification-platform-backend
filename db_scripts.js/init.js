@@ -4,15 +4,16 @@ const db = new Db('db', {});
 
 const lorem = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia, doloremque explicabo nemo voluptate facilis assumenda recusandae? Temporibus nesciunt, porro voluptatem eaque a similique aliquid, ducimus commodi, exercitationem quasi vel deserunt unde mollitia amet illum rem id fugiat dicta saepe vitae magni repellendus quas veniam eligendi? Voluptatem eos repudiandae numquam neque. Voluptatum nulla reiciendis praesentium dolorem vitae voluptate tempora at fuga, esse, mollitia asperiores sequi voluptates modi rem rerum aspernatur commodi suscipit atque iure earum architecto totam natus laborum! Asperiores iure voluptates similique expedita, totam optio placeat fugiat eum. Atque tempore dignissimos voluptatem placeat dicta consequuntur soluta tempora distinctio laborum sint neque rerum vel, assumenda dolorem aliquam id totam aliquid sed blanditiis eligendi officiis in! Deserunt aut molestias, commodi ducimus, cupiditate rerum ullam consequatur, ipsa laborum laboriosam explicabo possimus nulla consectetur mollitia eos qui sequi illo cumque iste id quos natus expedita optio. Nobis illo nemo eligendi! Ducimus, adipisci! Vel, hic!';
 
-// addMockCertificates(db, lorem)
-
-// generateRandomEthAccount()
 
 addMockIssuers(db)
 	.then(addMockTemplates)
-// generateNames()
+	.then(db => addMockDrafts(db, lorem))
+	.then(db => addMockCertificates(db, lorem))
+	.catch(console.log)
+
 
 function addMockIssuers(db) {
+	console.log('addIssuers')
 	let issuers = [];
 	let pass = 'password'
 	let names = generateNames();
@@ -43,10 +44,9 @@ function addMockIssuers(db) {
 		})
 	})
 
-	// console.log(issuers)
-
 	issuers = removeDuplicates(issuers, (obj, o) => obj.email == o.email)
-	// console.log(issuers)
+	issuers = issuers.slice(0, 4)
+
 	return insertMockToCollection(db, 'issuers', issuers)
 }
 
@@ -70,7 +70,6 @@ function generateRandomEthAccount() {
 
 	}
 
-	// console.log('0x' + str)
 	return str;
 }
 
@@ -90,12 +89,11 @@ function generateNames() {
 			})
 		})
 	})
-	// console.log(names)
+
 	let names_companies = []
 
 	names.forEach(name => {
 		company_names.forEach(c_name => {
-			// console.log('name', name)
 			let rnd = Math.random();
 			if (rnd <= 0.3) {
 				names_companies.push({
@@ -119,7 +117,6 @@ function generateNames() {
 
 		})
 	})
-	// console.log('names_companies', names_companies)
 	return names_companies;
 }
 
@@ -135,6 +132,7 @@ const SLIDER = 'SLIDER';
 const TEXTAREA = 'TEXTAREA';
 
 function addMockTemplates(db) {
+	console.log('addMockTemplates')
 	let templates = []
 
 	let standard_tmpl = {
@@ -191,10 +189,9 @@ function addMockTemplates(db) {
 const certificateNames = ['Java EE', 'Java SE', 'ECMAScript 5', 'ECMAScript 7', 'CSS 3']
 
 function addMockDrafts(db, lorem) {
-
+	console.log('addMockDrafts')
 	return new Promise(function (resolve, reject) {
-		db.collection('issuers').find({}, function (err, issuers) {
-			console.log(issuers)
+		db.collection('issuers').find({}).toArray(function (err, issuers) {
 
 			if (!err) {
 				db.collection('templates').findOne({}, function (err, tmpl) {
@@ -214,7 +211,6 @@ function addMockDrafts(db, lorem) {
 
 	function generateMockDrafts(issuers, lorem, tmpl) {
 		let drafts = [];
-
 		for (let i = 0; i < 5; i++) {
 			let name = getRndArrItem(certificateNames)
 			drafts.push({
@@ -237,9 +233,9 @@ const receiverSurnames = ['Petrov', 'Smirnov', 'Ivanov', 'Doe', 'Stein', 'Malovi
 const receiverCompNames = ['Sany', 'Morgan', 'Papasonyc', 'Minihard', 'Gazoil']
 
 function addMockCertificates(db, lorem) {
-
+	console.log('addMockCertificates')
 	return new Promise(function (resolve, reject) {
-		db.collection('drafts').find({}, function (err, drafts) {
+		db.collection('drafts').find({}).toArray(function (err, drafts) {
 
 			if (!err) {
 				db.collection('templates').findOne({}, function (err, tmpl) {
@@ -247,7 +243,7 @@ function addMockCertificates(db, lorem) {
 						reject(err)
 					else {
 						let mockCertificates = generateMockCertificates(drafts, lorem, tmpl);
-						resolve(insertMockToCollection(db, 'drafts', mockCertificates))
+						resolve(insertMockToCollection(db, 'certificates', mockCertificates))
 					}
 
 				})
@@ -310,7 +306,7 @@ function insertMockToCollection(db, collection_name, mock_arr) {
 	return new Promise(function (resolve, reject) {
 		db.collection(collection_name)
 			.insert(mock_arr, function (err, result) {
-				console.log(collection_name, result, err)
+				console.log(collection_name, err)
 				if (!err)
 					resolve(db)
 				else

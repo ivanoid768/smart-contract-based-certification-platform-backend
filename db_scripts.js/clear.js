@@ -3,8 +3,10 @@ const Db = require('tingodb')().Db;
 const db = new Db('db', {});
 
 let collectionsToDelete = [
-	'default_certificates',
-	'issuers'
+	'certificates',
+	'issuers',
+	'drafts',
+	'templates'
 ]
 
 collectionsToDelete.forEach(function (collection_name) {
