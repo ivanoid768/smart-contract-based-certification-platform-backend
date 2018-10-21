@@ -1,48 +1,45 @@
-const jwt = require('jsonwebtoken');
-
 module.exports = function (server, db) {
 
-	server.post('/login/issuer', function respond(req, res, next) {
+	server.post('/login', function (req, res) {
 		let body = req.body;
-
-		console.log(body)
 
 		let issuers = db.collection("issuers");
 
-		issuers.find({ 'login': body.login }).toArray(function (err, issuers) {
-			let issuer = issuers[0];
-			if (issuer.password != body.password) {
+		issuers.findOne({ 'login': body.login }, function (err, user) {
+			if (err) {
+				res.send(500, JSON.stringify(err))
+			}
+			else if (!user) {
+				res.send(404, 'invalid_login')
+			}
+			else if (user.password != body.password) {
 				res.send(404, 'invalid_password')
 			}
-
-			let token = jwt.sign({ payload: 'payload' }, issuer.password);
-
-			console.log(issuer)
-
-			db.collection('user_token').insert({
-				user_id: issuer.id,
-				token: token
-			}, (err, result) => {
-				console.log(result, err)
-				res.send(201, token);
-				next();
-			})
+			else {
+				req.mySession.userId = user._id;
+				res.send(201, 'login_success')
+			}
 
 		});
 	});
 
-	server.post('/registration/issuer', function (req, res, next) {
+	server.post('/registration/issuer', function (req, res) {
 		let body = req.body;
 		console.log(body)
 
 		let issuers = db.collection("issuers");
 
-		body.id = Math.floor(Math.random() * 90000) + 10000;
+		body._id = Math.floor(Math.random() * 90000) + 10000;
 
-		issuers.insert(body, function (err, result) {
+		issuers.insertOne(body, function (err, user) {
+			if (err) {
+				res.send(500, JSON.stringify(err))
+			}
+			else {
+				console.log(user, err)
+				res.send(201, 'Registration successfully complited!');
+			}
 
-			console.log(result, err)
-			res.send(201, 'Registration successfully complited!');
 		});
 
 	});

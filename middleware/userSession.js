@@ -5,7 +5,18 @@ module.exports = function (server, db) {
 		console.log('session', req.mySession)
 
 		if (!req.mySession.userId)
-			req.mySession.userId = true;
+			return next()
+		else {
+			db.collection('issuers').findOne({ _id: req.mySession.userId }, function (err, user) {
+				if (user) {
+					req.user = user;
+					return next()
+				} else {
+					delete req.mySession.userId;
+					return next()
+				}
+			})
+		}
 
 		return next();
 

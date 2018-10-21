@@ -35,7 +35,8 @@ server.use(restify.plugins.bodyParser())
 // require('./auth/token')(server, db);
 require('./middleware/userSession')(server, db)
 
-require('./controllers/certificates')(server, db);
+// require('./controllers/certificates')(server, db);
+require('./controllers/common')(server, db)
 require('./controllers/registration')(server, db);
 
 server.listen(8081, function () {
