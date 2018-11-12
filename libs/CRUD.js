@@ -2,12 +2,13 @@ module.exports = function (server, db, collection_name, crudCBs) {
 
 	if (!crudCBs) crudCBs = {};
 
-	server.get(`/${collection_name}`, crudCBs.read || function respond(req, res, next) {
+	server.get(`/${collection_name}`, crudCBs.read || function (req, res, next) {
 
 		let collection = db.collection(collection_name);
 
 		collection.find({}).toArray(function (err, docs) {
 			res.send(docs);
+			next()
 		});
 
 
@@ -18,14 +19,14 @@ module.exports = function (server, db, collection_name, crudCBs) {
 
 		let collection = db.collection(collection_name);
 
-		collection.updateOne({ _id: req.params.id }, { $set: body }, function (err, result) {
+		collection.update({ _id: req.params.id }, { $set: body }, function (err, counter, status) {
 
-			res.send(201, result ? result.length : null);
+			res.send(201, counter + ' ' + JSON.stringify(status));
 		});
 
 	});
 
-	server.delete(`/${collection_name}/:id`, crudCBs.delete || function (req, res) {
+	server.del(`/${collection_name}/:id`, crudCBs.delete || function (req, res) {
 		let collection = db.collection(collection_name);
 
 		collection.deleteOne({ _id: req.params.id }, function (err, result) {

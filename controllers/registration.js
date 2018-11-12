@@ -44,4 +44,10 @@ module.exports = function (server, db) {
 
 	});
 
+	server.post('/logout', function (req, res) {
+		if (req.mySession.userId)
+			req.mySession.userId = null;
+		res.send(200, 'logout_success')
+	})
+
 };

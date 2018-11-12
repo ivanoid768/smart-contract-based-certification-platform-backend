@@ -1,0 +1,37 @@
+{
+	"default": {
+		"urls": [
+			{
+				"regexpr": "(certificates|^$)",
+				"methods": [
+					"GET"
+				]
+			},
+			{
+				"regexpr": "(registration|login|logout)",
+				"methods": [
+					"GET",
+					"POST"
+				]
+			}
+		]
+	},
+	"issuer": {
+		"urls": [
+			{
+				"regexpr": "(drafts|certificates|templates).*",
+				"methods": [
+					"GET",
+					"POST"
+				]
+			},
+			{
+				"regexpr": "issuers/:userId($|/$)",
+				"methods": [
+					"GET",
+					"POST"
+				]
+			}
+		]
+	}
+}

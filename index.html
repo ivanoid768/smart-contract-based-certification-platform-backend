@@ -15,7 +15,17 @@
 			axios.get('http://localhost:8081/certificates', { withCredentials: true })
 				.then(console.log)
 		}
-
+		function getIssuers() {
+			axios.get('http://localhost:8081/issuers', { withCredentials: true })
+				.then(console.log)
+		}
+		function login() {
+			axios.post('http://localhost:8081/login', { login: 'petya.vasyachkin', password: 'password' }, { withCredentials: true })
+				.then(console.log)
+		}
+		function logout() {
+			axios.post('http://localhost:8081/logout', null, { withCredentials: true })
+		}
 
 	</script>
 </body>

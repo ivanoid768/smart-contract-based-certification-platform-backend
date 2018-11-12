@@ -34,6 +34,7 @@ server.use(restify.plugins.queryParser({ mapParams: false }));
 server.use(restify.plugins.bodyParser())
 // require('./auth/token')(server, db);
 require('./middleware/userSession')(server, db)
+require('./middleware/accessByRole')(server, db)
 
 // require('./controllers/certificates')(server, db);
 require('./controllers/common')(server, db)
