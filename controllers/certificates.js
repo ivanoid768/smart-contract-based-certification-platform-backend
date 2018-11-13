@@ -1,33 +1,43 @@
+const crud = require('../libs/CRUD')
+const collection_name = 'certificates'
+
 module.exports = function (server, db) {
 
-	server.get('/certificates', function respond(req, res, next) {
+	crud(server, db, collection_name, {
+		create(req, res, next) {
+			let body = req.body;
 
-		//mongodb request for certificates!
-		// console.log(req.query)
-		// console.log('session', req.mySession)
-		let collection = db.collection("default_certificates");
+			let collection = db.collection(collection_name);
 
-		collection.find({}).toArray(function (err, certificates) {
-			// console.log(certificates)
-			res.send(certificates);
-			next();
-		});
+			if (!req.user) {
+				next(new Error('no_user_error'))
+			}
 
+			body.issuer = req.user._id;
 
-	});
+			collection.insert(body, function (err, result, status) {
 
-	server.post('/certificates', function (req, res, next) {
-		let body = req.body;
-		// console.log(body)
+				if (err) next(err);
 
-		let collection = db.collection("default_certificates");
+				console.log('Inserted certificates: ', result, status)
 
-		collection.insert(body, function (err, result) {
+				res.send(201, { ids: result.map(r => r._id) } || 'no_items_had_been_inserted');
+			});
+		},
+		update(req, res, next) {
+			let body = req.body;
 
-			// console.log(result, err)
-			res.send(201, result ? result.length : null);
-		});
+			let collection = db.collection(collection_name);
 
-	});
+			if (!req.user) {
+				next(new Error('no_user_error'))
+			}
 
-};
+			collection.update({ _id: req.params.id, issuer: req.user._id }, { $set: body }, function (err, counter, status) {
+
+				res.send(201, counter + ' ' + JSON.stringify(status));
+			});
+		}
+	})
+
+}

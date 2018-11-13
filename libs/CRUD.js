@@ -14,6 +14,21 @@ module.exports = function (server, db, collection_name, crudCBs) {
 
 	});
 
+	server.get(`/${collection_name}/:id`, crudCBs.readById || function (req, res, next) {
+
+		let collection = db.collection(collection_name);
+
+		collection.find({ _id: req.params.id }).toArray(function (err, docs) {
+			if (err) next(err)
+
+			if (docs[0])
+				doc = docs[0]
+			res.send(doc);
+		});
+
+
+	});
+
 	server.post(`/${collection_name}/:id`, crudCBs.update || function (req, res) {
 		let body = req.body;
 

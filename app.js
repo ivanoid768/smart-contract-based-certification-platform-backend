@@ -37,8 +37,7 @@ require('./middleware/userSession')(server, db)
 require('./middleware/accessByRole')(server, db)
 
 // require('./controllers/certificates')(server, db);
-require('./controllers/common')(server, db)
-require('./controllers/registration')(server, db);
+require('./controllers')(server, db)
 
 server.listen(8081, function () {
 	console.log('%s listening at %s', server.name, server.url);

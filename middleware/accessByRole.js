@@ -16,7 +16,7 @@ module.exports = function (server, db) {
 		}
 		//console.log(urlAccessPatterns)
 		urlAccessPatterns = replaceRouteParamsWithValues(urlAccessPatterns, user)
-
+		console.log('urlAccessPatterns', urlAccessPatterns)
 		if (permitAccess(reqUrl, method, urlAccessPatterns))
 			return next()
 		else
@@ -26,7 +26,7 @@ module.exports = function (server, db) {
 }
 
 function permitAccess(reqUrl, method, urlAccessPatterns) {
-	//console.log('permitAccess: ', reqUrl, method)
+	console.log('permitAccess: ', reqUrl, method)
 
 	let permit = false;
 
