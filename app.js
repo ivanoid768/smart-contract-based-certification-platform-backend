@@ -1,7 +1,8 @@
 const Db = require('tingodb')().Db;
-const restify = require('restify');
+const express = require('express');
+// const bodyParser = require('body-parser')
 const sessions = require("client-sessions")
-const corsMiddleware = require('restify-cors-middleware')
+const corsMiddleware = require('cors')
 
 const cors = corsMiddleware({
 	preflightMaxAge: 5, //Optional
@@ -12,11 +13,9 @@ const cors = corsMiddleware({
 })
 
 const db = new Db(__dirname + '/db', {});
-const server = restify.createServer();
+const app = express();
 
-server.pre(cors.preflight)
-
-server.use(sessions({
+app.use(sessions({
 	cookieName: 'mySession', // cookie name dictates the key name added to the request object
 	secret: 'blargadeeblargblarg', // should be a large unguessable string
 	duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms
@@ -29,16 +28,18 @@ server.use(sessions({
 		secure: false // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
 	}
 }))
-server.use(cors.actual)
-server.use(restify.plugins.queryParser({ mapParams: false }));
-server.use(restify.plugins.bodyParser())
+app.use(cors)
+app.use(express.json());
+app.use(express.urlencoded({
+	extended: true
+}));
 // require('./auth/token')(server, db);
-require('./middleware/userSession')(server, db)
-require('./middleware/accessByRole')(server, db)
+require('./middleware/userSession')(app, db)
+require('./middleware/accessByRole')(app, db)
 
 // require('./controllers/certificates')(server, db);
-require('./controllers')(server, db)
+require('./controllers')(app, db)
 
-server.listen(8081, function () {
-	console.log('%s listening at %s', server.name, server.url);
+let server = app.listen(8081, function () {
+	console.log('%s listening at %s', app.name, server.address().port);
 });

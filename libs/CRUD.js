@@ -41,7 +41,7 @@ module.exports = function (server, db, collection_name, crudCBs) {
 
 	});
 
-	server.del(`/${collection_name}/:id`, crudCBs.delete || function (req, res) {
+	server.delete(`/${collection_name}/:id`, crudCBs.delete || function (req, res) {
 		let collection = db.collection(collection_name);
 
 		collection.deleteOne({ _id: req.params.id }, function (err, result) {

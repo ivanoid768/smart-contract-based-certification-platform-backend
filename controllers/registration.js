@@ -3,6 +3,8 @@ module.exports = function (server, db) {
 	server.post('/login', function (req, res) {
 		let body = req.body;
 
+		console.log('body: ', body)
+
 		let issuers = db.collection("issuers");
 
 		issuers.findOne({ 'login': body.login }, function (err, user) {
@@ -10,14 +12,14 @@ module.exports = function (server, db) {
 				res.send(500, JSON.stringify(err))
 			}
 			else if (!user) {
-				res.send(404, 'invalid_login')
+				res.status(404).send('invalid_login')
 			}
 			else if (user.password != body.password) {
 				res.send(404, 'invalid_password')
 			}
 			else {
 				req.mySession.userId = user._id;
-				res.send(201, 'login_success')
+				res.status(201).send('login_success')
 			}
 
 		});

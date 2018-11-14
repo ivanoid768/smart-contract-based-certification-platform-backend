@@ -1,0 +1,25 @@
+{
+	"name": "local_server",
+	"version": "1.0.0",
+	"description": "Node Express server as part of smart contract based certification platform",
+	"main": "app.js",
+	"directories": {
+		"test": "test"
+	},
+	"dependencies": {
+		"body-parser": "^1.18.3",
+		"client-sessions": "^0.8.0",
+		"cors": "^2.8.5",
+		"express": "^4.16.4",
+		"jsonwebtoken": "^8.4.0",
+		"mongodb": "^3.1.9",
+		"restify": "^7.2.2",
+		"tingodb": "^0.6.1"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "ivanoid256",
+	"license": "ISC"
+}
