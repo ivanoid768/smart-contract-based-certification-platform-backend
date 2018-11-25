@@ -5,10 +5,10 @@ const sessions = require("client-sessions")
 const corsMiddleware = require('cors')
 
 const cors = corsMiddleware({
-	preflightMaxAge: 5, //Optional
-	origins: ['null'],
-	allowHeaders: ['API-Token'],
-	exposeHeaders: ['API-Token-Expiry'],
+	// preflightMaxAge: 5, //Optional
+	origin: true,
+	// allowHeaders: ['API-Token'],
+	// exposeHeaders: ['API-Token-Expiry'],
 	credentials: true
 })
 
@@ -21,6 +21,7 @@ app.use(sessions({
 	duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms
 	activeDuration: 1000 * 60 * 5, // if expiresIn < activeDuration, the session will be extended by activeDuration milliseconds
 	cookie: {
+		// TODO Store session in DB!
 		// path: '/api', // cookie will only be sent to requests under '/api'
 		// maxAge: 60000, // duration of the cookie in milliseconds, defaults to duration above
 		// ephemeral: false, // when true, cookie expires when the browser closes
@@ -28,6 +29,8 @@ app.use(sessions({
 		secure: false // when true, cookie will only be sent over SSL. use key 'secureProxy' instead if you handle SSL not in your node process
 	}
 }))
+
+// app.options('*', cors)
 app.use(cors)
 app.use(express.json());
 app.use(express.urlencoded({

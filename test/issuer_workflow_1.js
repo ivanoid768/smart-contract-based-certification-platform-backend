@@ -62,7 +62,7 @@ function issuerWorkflowTest1() {
 					name: L.receiverNames[i],
 					surname: L.receiverSurnames[i],
 					company_name: Math.random() > 0.5 ? L.receiverCompNames[i] : null,
-					eth_account: L.generateRandomEthAccount()
+					eth_account: '0x' + L.generateRandomEthAccount()
 				},
 				status: 'unissued',
 				timestamp: Date.now(),
