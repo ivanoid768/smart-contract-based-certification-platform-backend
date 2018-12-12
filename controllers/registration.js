@@ -47,8 +47,15 @@ module.exports = function (server, db) {
 	});
 
 	server.post('/logout', function (req, res) {
-		if (req.mySession.userId)
-			req.mySession.userId = null;
+		if (req.mySession.userId) {
+
+			let u_sock = server.get('user_socket')[req.mySession.userId]
+			if (u_sock)
+				u_sock.disconnect(true)
+
+			delete req.mySession.userId;
+
+		}
 		res.send(200, 'logout_success')
 	})
 
