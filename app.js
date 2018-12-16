@@ -1,4 +1,5 @@
-const Db = require('tingodb')().Db;
+// const Db = require('tingodb')().Db;
+const MongoClient = require('mongodb').MongoClient;
 const express = require('express');
 // const bodyParser = require('body-parser')
 const sessions = require("client-sessions")
@@ -12,8 +13,15 @@ const cors = corsMiddleware({
 	credentials: true
 })
 
-const db = new Db(__dirname + '/db', {});
-const app = express();
+// const db = new Db(__dirname + '/db', {});
+const dbName = 'certification_platform';
+const dbClient = new MongoClient('mongodb://localhost:27017/certification_platform')
+dbClient.connect().then(() => {
+	const db = dbClient.db(dbName)
+
+	server_init(db)
+
+})
 
 app.use(sessions({
 	cookieName: 'mySession', // cookie name dictates the key name added to the request object
@@ -36,12 +44,15 @@ app.use(express.json());
 app.use(express.urlencoded({
 	extended: true
 }));
-// require('./auth/token')(server, db);
-require('./middleware/userSession')(app, db)
-require('./middleware/accessByRole')(app, db)
 
-// require('./controllers/certificates')(server, db);
-require('./controllers')(app, db)
+function server_init(db) {
+	// require('./auth/token')(server, db);
+	require('./middleware/userSession')(app, db)
+	require('./middleware/accessByRole')(app, db)
+
+	// require('./controllers/certificates')(server, db);
+	require('./controllers')(app, db)
+}
 
 let server = app.listen(8081, function () {
 	console.log('%s listening at %s', app.name, server.address().port);
