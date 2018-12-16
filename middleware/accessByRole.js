@@ -20,7 +20,7 @@ module.exports = function (server, db) {
 		if (permitAccess(reqUrl, method, urlAccessPatterns))
 			return next()
 		else
-			res.send('access_denied_for_the_role', 201)
+			res.status(201).send('access_denied_for_the_role')
 
 	})
 }
@@ -71,7 +71,7 @@ function replaceRouteParamsWithValues(urlAccessPatterns, user, routeValues) {
 }
 
 function getRole(user) {
-	//console.log('getRole: ', user)
+	console.log('getRole: ', user)
 	if (!user)
 		role = 'default';
 	else

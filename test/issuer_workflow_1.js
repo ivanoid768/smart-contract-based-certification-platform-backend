@@ -9,6 +9,7 @@ function issuerWorkflowTest1() {
 		.then(createCertificates)
 		.then(issueCertificates)
 		.then(L.log)
+		.catch(console.log)
 
 
 	function logout() {
@@ -79,7 +80,7 @@ function issuerWorkflowTest1() {
 		console.log('start--------')
 		let promises = certificatesIds.map(cId => {
 			console.log(cId)
-			return axios.post(dUrl + 'certificates/' + cId, { status: 'issued' }, { withCredentials: true })
+			return axios.post(dUrl + 'certificates/' + cId, { status: 'test_backend_issued' }, { withCredentials: true })
 		})
 		console.log('end----------')
 		return Promise.all(promises)
