@@ -24,4 +24,16 @@ module.exports = function (server, db) {
 		}
 	})
 
+	server.get(`/my/${collection_name}`, function (req, res, next) {
+
+		let userId = req.user._id;
+
+		let coll = db.collection(collection_name);
+
+		coll.find({ issuer: userId }).toArray()
+			.then(cfts => {
+				res.send(cfts)
+			})
+	})
+
 }
