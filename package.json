@@ -15,13 +15,15 @@
 		"mongodb": "^3.1.9",
 		"restify": "^7.2.2",
 		"sha3": "^2.0.0",
+		"socket.io": "^2.2.0",
 		"tingodb": "^0.6.1",
 		"uuid": "^3.3.2",
 		"web3": "^1.0.0-beta.36"
 	},
 	"devDependencies": {},
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"eth_start": "node ../../../smart_contract/playground/web3/Certification_test.js"
 	},
 	"author": "ivanoid256",
 	"license": "ISC"

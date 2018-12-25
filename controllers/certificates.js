@@ -56,15 +56,20 @@ module.exports = function (server, db) {
 
 				let cft_id = req.params.id;
 				let u_id = req.user._id;
+				let u_sock = server.get('user_socket')[u_id]
 
 				collection.update({ _id: req.params.id, issuer: req.user._id }, { $set: { status: body.status } }, function (err, counter, status) {
 
 					collection.find({ _id: cft_id, issuer: u_id }).toArray(function (err, result) {
-						Web3Certification.issueFromThePlatform(result[0], req.user, eth_status => console.log('eth_status: ', eth_status))
+						Web3Certification.issueFromThePlatform(result[0], req.user, eth_status => {
+							console.log('eth_status: ', eth_status)
+							u_sock.emit('eth_status', eth_status)
+						})
 							.then(status => {
 								if (status == 'issued') {
 									collection.update({ _id: cft_id, issuer: u_id }, { $set: { status: 'issued' } }, function (err, count, stat) {
 										console.log('Had been issued on Ethereum!', count, stat)
+										u_sock.emit('eth_status', 'Had been issued on Ethereum!')
 									})
 								}
 							})

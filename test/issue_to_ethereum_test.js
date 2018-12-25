@@ -1,15 +1,23 @@
-function IssueToEthereumTest() {
+function IssueToEthereumTest(should_login = true) {
 	let last5cftIds = [82, 83, 84, 85, 86];
 
 	axios.defaults.withCredentials = true;
 	axios.defaults.baseURL = 'http://localhost:8081'
 
-	logout()
-		.then(login)
+	logInlogOut()
 		.then(getLastCertificate)
 		.then(setCftStatusToUnissued)
 		.then(issueToEthereum)
 		.catch(console.log)
+
+	function logInlogOut() {
+		if (should_login) {
+			return logout()
+				.then(login)
+		} else {
+			return Promise.resolve(true)
+		}
+	}
 
 	function logout() {
 		return axios.post('/logout', null)

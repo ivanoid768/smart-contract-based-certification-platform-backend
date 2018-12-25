@@ -7,29 +7,31 @@
 	<title>Certification Platform</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="http://localhost:8081/socket.io/socket.io.js"></script>
 </head>
 
 <body>
 	<script>
 		function getCertificates() {
-			axios.get('http://localhost:8081/certificates', { withCredentials: true })
+			return axios.get('http://localhost:8081/certificates', { withCredentials: true })
 				.then(console.log)
 		}
 		function getIssuers() {
-			axios.get('http://localhost:8081/issuers', { withCredentials: true })
+			return axios.get('http://localhost:8081/issuers', { withCredentials: true })
 				.then(console.log)
 		}
 		function login() {
-			axios.post('http://localhost:8081/login', { login: 'petya.vasyachkin', password: 'password' }, { withCredentials: true })
+			return axios.post('http://localhost:8081/login', { login: 'petya.vasyachkin', password: 'password' }, { withCredentials: true })
 				.then(console.log)
 		}
 		function logout() {
-			axios.post('http://localhost:8081/logout', null, { withCredentials: true })
+			return axios.post('http://localhost:8081/logout', null, { withCredentials: true })
 		}
 
 	</script>
 	<script src="test/issuer_workflow_1.js"></script>
 	<script src="test/issue_to_ethereum_test.js"></script>
+	<script src="test/socket_io_test.js"></script>
 </body>
 
 </html>

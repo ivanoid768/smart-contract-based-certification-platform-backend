@@ -13,6 +13,10 @@ Contract.options.from = platform_address;
 
 let uuid = '0xd1a6235a4f23470ea2e49a37b2bfecd8';
 
+if (process.argv[2]) {
+	uuid = process.argv[2]
+}
+
 const issueTx = Contract.methods.getCertificate(uuid);
 
 issueTx.call()
