@@ -1,4 +1,5 @@
-const Db = require('tingodb')().Db;
+// const Db = require('tingodb')().Db;
+const MongoClient = require('mongodb').MongoClient;
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
@@ -16,7 +17,15 @@ const cors = corsMiddleware({
 	credentials: true
 })
 
-const db = new Db(__dirname + '/db', {});
+// const db = new Db(__dirname + '/db', {});
+const dbName = 'certification_platform';
+const dbClient = new MongoClient('mongodb://localhost:27017/certification_platform')
+dbClient.connect().then(() => {
+	const db = dbClient.db(dbName)
+
+	server_init(db)
+
+})
 
 const session_opts = { // TODO Confirm that Session ID is signed with SHA3 !
 	cookieName: 'mySession', // cookie name dictates the key name added to the request object
@@ -41,12 +50,15 @@ app.use(express.json());
 app.use(express.urlencoded({
 	extended: true
 }));
-// require('./auth/token')(server, db);
-require('./middleware/userSession')(app, db)
-require('./middleware/accessByRole')(app, db)
 
-// require('./controllers/certificates')(server, db);
-require('./controllers')(app, db)
+function server_init(db) {
+	// require('./auth/token')(server, db);
+	require('./middleware/userSession')(app, db)
+	require('./middleware/accessByRole')(app, db)
+
+	// require('./controllers/certificates')(server, db);
+	require('./controllers')(app, db)
+}
 
 const users_sockets = Object.create(null);
 app.set('user_socket', users_sockets)

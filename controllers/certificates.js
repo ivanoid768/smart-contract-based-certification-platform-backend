@@ -1,6 +1,7 @@
 const crud = require('../libs/CRUD')
 const Web3Certification = require('../web3/certification')
 const uuidv4 = require('uuid/v4')
+const ObjectID = require('mongodb').ObjectID;
 const collection_name = 'certificates'
 
 module.exports = function (server, db) {
@@ -34,7 +35,7 @@ module.exports = function (server, db) {
 
 				console.log('Inserted certificates: ', result, status)
 
-				res.status(201).send({ ids: result.map(r => r._id) } || 'no_items_had_been_inserted');
+				res.status(201).send({ ids: Object.values(result.insertedIds) } || 'no_items_had_been_inserted');
 			});
 		},
 		update(req, res, next) {
@@ -46,7 +47,7 @@ module.exports = function (server, db) {
 				return next(new Error('no_user_error'))
 			}
 			if (!(body.status && body.status == 'issued')) {
-				collection.update({ _id: req.params.id, issuer: req.user._id }, { $set: body }, function (err, counter, status) {
+				collection.update({ _id: new ObjectID(req.params.id), issuer: req.user._id }, { $set: body }, function (err, counter, status) {
 					res.status(201).send(counter + ' certificate_updated ' + JSON.stringify(status))
 
 				})
@@ -58,16 +59,17 @@ module.exports = function (server, db) {
 				let u_id = req.user._id;
 				let u_sock = server.get('user_socket')[u_id]
 
-				collection.update({ _id: req.params.id, issuer: req.user._id }, { $set: { status: body.status } }, function (err, counter, status) {
+				collection.update({ _id: new ObjectID(req.params.id), issuer: req.user._id }, { $set: { status: body.status } }, function (err, counter, status) {
 
-					collection.find({ _id: cft_id, issuer: u_id }).toArray(function (err, result) {
+					collection.find({ _id: new ObjectID(cft_id), issuer: u_id }).toArray(function (err, result) {
+
 						Web3Certification.issueFromThePlatform(result[0], req.user, eth_status => {
 							console.log('eth_status: ', eth_status)
 							u_sock.emit('eth_status', eth_status)
 						})
 							.then(status => {
 								if (status == 'issued') {
-									collection.update({ _id: cft_id, issuer: u_id }, { $set: { status: 'issued' } }, function (err, count, stat) {
+									collection.update({ _id: new ObjectID(cft_id), issuer: u_id }, { $set: { status: 'issued' } }, function (err, count, stat) {
 										console.log('Had been issued on Ethereum!', count, stat)
 										u_sock.emit('eth_status', 'Had been issued on Ethereum!')
 									})

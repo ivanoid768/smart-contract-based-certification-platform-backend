@@ -1,16 +1,26 @@
-const Db = require('tingodb')().Db;
+// const Db = require('tingodb')().Db;
 
-const db = new Db('db', {});
+// const db = new Db('db', {});
+
+const MongoClient = require('mongodb').MongoClient;
+const uuidv4 = require('uuid/v4')
+
+const url = 'mongodb://localhost:27017/certification_platform';
+const dbName = 'certification_platform';
+const client = new MongoClient(url);
 
 const lorem = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia, doloremque explicabo nemo voluptate facilis assumenda recusandae? Temporibus nesciunt, porro voluptatem eaque a similique aliquid, ducimus commodi, exercitationem quasi vel deserunt unde mollitia amet illum rem id fugiat dicta saepe vitae magni repellendus quas veniam eligendi? Voluptatem eos repudiandae numquam neque. Voluptatum nulla reiciendis praesentium dolorem vitae voluptate tempora at fuga, esse, mollitia asperiores sequi voluptates modi rem rerum aspernatur commodi suscipit atque iure earum architecto totam natus laborum! Asperiores iure voluptates similique expedita, totam optio placeat fugiat eum. Atque tempore dignissimos voluptatem placeat dicta consequuntur soluta tempora distinctio laborum sint neque rerum vel, assumenda dolorem aliquam id totam aliquid sed blanditiis eligendi officiis in! Deserunt aut molestias, commodi ducimus, cupiditate rerum ullam consequatur, ipsa laborum laboriosam explicabo possimus nulla consectetur mollitia eos qui sequi illo cumque iste id quos natus expedita optio. Nobis illo nemo eligendi! Ducimus, adipisci! Vel, hic!';
 
+client.connect().then(() => {
 
-addMockIssuers(db)
-	.then(addMockTemplates)
-	.then(db => addMockDrafts(db, lorem))
-	.then(db => addMockCertificates(db, lorem))
-	.catch(console.log)
-
+	const db = client.db(dbName);
+	addMockIssuers(db)
+		.then(addMockTemplates)
+		.then(db => addMockDrafts(db, lorem))
+		.then(db => addMockCertificates(db, lorem))
+		.then(() => client.close())
+		.catch(console.log)
+})
 
 function addMockIssuers(db) {
 	console.log('addIssuers')
@@ -36,7 +46,7 @@ function addMockIssuers(db) {
 		issuers.push({
 			login: login.toLowerCase(),
 			email: email.toLowerCase(),
-			eth_account: generateRandomEthAccount(),
+			eth_account: '0x' + generateRandomEthAccount(),
 			password: pass,
 			name: name.name,
 			surname: name.surname,
@@ -261,13 +271,14 @@ function addMockCertificates(db, lorem) {
 			certificates.push({
 				template: draft.template,
 				name: draft.name,
+				uuid: '0x' + uuidv4().replace(/-/g, ''),
 				issuer: draft.issuer,
 				description: draft.description,
 				receiver: {
 					name: getRndArrItem(receiverNames),
 					surname: getRndArrItem(receiverSurnames),
 					company_name: Math.random() > 0.5 ? getRndArrItem(receiverCompNames) : null,
-					eth_account: generateRandomEthAccount()
+					eth_account: '0x' + generateRandomEthAccount()
 				},
 				status: 'unissued',
 				timestamp: Date.now(),

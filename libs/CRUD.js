@@ -1,3 +1,5 @@
+const ObjectID = require('mongodb').ObjectID;
+
 module.exports = function (server, db, collection_name, crudCBs) {
 
 	if (!crudCBs) crudCBs = {};
@@ -18,9 +20,10 @@ module.exports = function (server, db, collection_name, crudCBs) {
 
 		let collection = db.collection(collection_name);
 
-		collection.find({ _id: req.params.id }).toArray(function (err, docs) {
+		collection.find({ _id: new ObjectID(req.params.id) }).toArray(function (err, docs) {
 			if (err) next(err)
 
+			let doc;
 			if (docs[0])
 				doc = docs[0]
 			res.send(doc);
@@ -34,7 +37,7 @@ module.exports = function (server, db, collection_name, crudCBs) {
 
 		let collection = db.collection(collection_name);
 
-		collection.update({ _id: req.params.id }, { $set: body }, function (err, counter, status) {
+		collection.update({ _id: new ObjectID(req.params.id) }, { $set: body }, function (err, counter, status) {
 
 			res.send(201, counter + ' ' + JSON.stringify(status));
 		});
@@ -44,7 +47,7 @@ module.exports = function (server, db, collection_name, crudCBs) {
 	server.delete(`/${collection_name}/:id`, crudCBs.delete || function (req, res) {
 		let collection = db.collection(collection_name);
 
-		collection.deleteOne({ _id: req.params.id }, function (err, result) {
+		collection.deleteOne({ _id: new ObjectID(req.params.id) }, function (err, result) {
 
 			res.send(201, result ? result : null);
 		});
